@@ -1,0 +1,109 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+// Nama: Intifada Ade Kartika
+// NIM: 23533756
+
+struct Makanan {
+    string nama;
+    int kalori;
+    int nilaiGizi;
+};
+
+struct Menu {
+    vector<Makanan> makananDipilih;
+    int totalKalori = 0;
+    int totalGizi = 0;
+};
+
+void pilihMenu(const vector<Makanan>& daftar, int batasKalori, Menu& menu) {
+    int n = daftar.size();
+
+    int maxGizi = 0;
+    vector<int> terbaik;
+
+    for (int i = 0; i < (1 << n); i++) {
+        int kalori = 0, gizi = 0;
+        vector<int> dipilih;
+
+        for (int j = 0; j < n; j++) {
+            if (i & (1 << j)) {
+                kalori += daftar[j].kalori;
+                gizi += daftar[j].nilaiGizi;
+                dipilih.push_back(j);
+            }
+        }
+
+        if (kalori <= batasKalori && gizi > maxGizi) {
+            maxGizi = gizi;
+            terbaik = dipilih;
+        }
+    }
+
+    // Simpan hasil terbaik
+    for (int idx : terbaik) {
+        menu.makananDipilih.push_back(daftar[idx]);
+        menu.totalKalori += daftar[idx].kalori;
+        menu.totalGizi += daftar[idx].nilaiGizi;
+    }
+}
+
+void tampilkanMenu(const string& waktu, const Menu& menu) {
+    cout << "\n>> " << waktu << ":\n";
+    for (const auto& m : menu.makananDipilih) {
+        cout << "- " << m.nama << " (Kalori: " << m.kalori << ", Gizi: " << m.nilaiGizi << ")\n";
+    }
+    cout << "Total Kalori: " << menu.totalKalori << " kkal\n";
+    cout << "Total Gizi: " << menu.totalGizi << "\n";
+}
+
+int main() {
+    cout << "=== Program Penyusunan Menu Makanan Seimbang ===\n";
+    cout << "Nama: Intifada Ade Kartika\n";
+    cout << "NIM : 23533756\n";
+
+    int jumlah;
+    cout << "\nMasukkan jumlah makanan yang tersedia: ";
+    cin >> jumlah;
+
+    vector<Makanan> daftar(jumlah);
+    for (int i = 0; i < jumlah; i++) {
+        cin.ignore();
+        cout << "\nMakanan ke-" << i + 1 << ":\n";
+        cout << "Nama: ";
+        getline(cin, daftar[i].nama);
+        cout << "Kalori: ";
+        cin >> daftar[i].kalori;
+        cout << "Nilai Gizi (1-10): ";
+        cin >> daftar[i].nilaiGizi;
+    }
+
+    int totalKaloriHarian;
+    cout << "\nMasukkan total kebutuhan kalori harian Anda (misalnya dari BMR): ";
+    cin >> totalKaloriHarian;
+
+    // Bagi ke 3 waktu makan (30% pagi, 40% siang, 30% malam)
+    int pagi = totalKaloriHarian * 0.3;
+    int siang = totalKaloriHarian * 0.4;
+    int malam = totalKaloriHarian * 0.3;
+
+    Menu menuPagi, menuSiang, menuMalam;
+
+    pilihMenu(daftar, pagi, menuPagi);
+    pilihMenu(daftar, siang, menuSiang);
+    pilihMenu(daftar, malam, menuMalam);
+
+    // Output
+    cout << "\n=== Rekomendasi Menu Makanan 3 Kali Sehari ===";
+    tampilkanMenu("Makan Pagi", menuPagi);
+    tampilkanMenu("Makan Siang", menuSiang);
+    tampilkanMenu("Makan Malam", menuMalam);
+
+    int totalGizi = menuPagi.totalGizi + menuSiang.totalGizi + menuMalam.totalGizi;
+    cout << "\nTotal Nilai Gizi Sehari: " << totalGizi << endl;
+
+    return 0;
+}
