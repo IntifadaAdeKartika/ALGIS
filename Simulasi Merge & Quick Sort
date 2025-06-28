@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Visual Algoritma Pengurutan</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .algorithm-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        .array-display {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            min-height: 100px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .array-element {
+            width: 40px;
+            height: 40px;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            position: relative;
+            margin: 2px;
+        }
+
+        .array-element.highlight-compare {
+            background-color: #e67e22; /* Orange for comparison */
+        }
+
+        .array-element.highlight-pivot {
+            background-color: #e74c3c; /* Red for pivot */
+            transform: scale(1.1);
+        }
+
+        .array-element.highlight-swap {
+            background-color: #2ecc71; /* Green for swapped */
+        }
+
+        .array-element.highlight-sorted {
+            background-color: #27ae60; /* Dark green for sorted */
+        }
+
+        .array-element.highlight-current {
+            background-color: #9b59b6; /* Purple for current element in Quick Sort iteration */
+        }
+
+        .array-element.highlight-i-pointer::after {
+            content: 'i';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            color: #333;
+            font-weight: normal;
+        }
+
+        .array-element.highlight-j-pointer::after {
+            content: 'j';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            color: #333;
+            font-weight: normal;
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .controls button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .controls button:hover {
+            background-color: #2980b9;
+        }
+
+        .controls button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .step-description {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            min-height: 80px;
+            font-style: italic;
+            color: #555;
+        }
+
+        .sub-array-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sub-array {
+            display: flex;
+            border: 1px dashed #999;
+            padding: 5px;
+            border-radius: 3px;
+            gap: 2px;
+            flex-wrap: wrap;
+            min-height: 50px;
+            align-items: center;
+        }
+
+        .sub-array-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+            text-align: center;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .algorithm-section {
+                width: 95%;
+            }
+            .array-element {
+                width: 35px;
+                height: 35px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Simulasi Visual Algoritma Pengurutan</h1>
+
+    <div class="container">
+        <div class="algorithm-section">
+            <h2>Merge Sort</h2>
+            <div id="mergeSortArrayInitial" class="array-display"></div>
+            <div id="mergeSortArrayDisplay" class="array-display"></div>
+            <div id="mergeSortSubArrays" class="sub-array-container"></div>
+            <div id="mergeSortTempArray" class="array-display" style="border: 1px dashed #999; display: none;">
+                <div class="sub-array-label">Array Sementara (Hasil Merge)</div>
+            </div>
+            <div class="step-description" id="mergeSortDescription"></div>
+            <div class="controls">
+                <button id="mergeSortStartBtn">Mulai</button>
+                <button id="mergeSortNextBtn" disabled>Langkah Berikutnya</button>
+                <button id="mergeSortResetBtn" disabled>Reset</button>
+            </div>
+        </div>
+
+        <div class="algorithm-section">
+            <h2>Quick Sort</h2>
+            <div id="quickSortArrayInitial" class="array-display"></div>
+            <div id="quickSortArrayDisplay" class="array-display"></div>
+            <div class="step-description" id="quickSortDescription"></div>
+            <div class="controls">
+                <button id="quickSortStartBtn">Mulai</button>
+                <button id="quickSortNextBtn" disabled>Langkah Berikutnya</button>
+                <button id="quickSortResetBtn" disabled>Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const initialArray = [80, 34, 72, 3, 9, 61, 33, 67, 74];
+
+        // --- Utility Functions ---
+        function displayArray(containerId, arr, highlights = {}, pointers = {}) {
+            const container = document.getElementById(containerId);
+            if (!container) return; // Ensure container exists
+            container.innerHTML = '';
+            arr.forEach((num, index) => {
+                const element = document.createElement('div');
+                element.classList.add('array-element');
+                element.textContent = num;
+
+                // Apply highlights
+                if (highlights.compare && highlights.compare.includes(index)) {
+                    element.classList.add('highlight-compare');
+                }
+                if (highlights.pivotIndex === index) {
+                    element.classList.add('highlight-pivot');
+                }
+                if (highlights.swapIndices && highlights.swapIndices.includes(index)) {
+                    element.classList.add('highlight-swap');
+                }
+                if (highlights.sortedIndices && highlights.sortedIndices.includes(index)) {
+                    element.classList.add('highlight-sorted');
+                }
+                if (highlights.currentIterationIndex === index) {
+                    element.classList.add('highlight-current');
+                }
+                if (highlights.mergedIndices && highlights.mergedIndices.includes(index)) {
+                    element.classList.add('highlight-swap'); // Use swap color for merged elements for visibility
+                }
+
+                // Apply pointers for Quick Sort
+                if (pointers.i === index) {
+                    element.classList.add('highlight-i-pointer');
+                }
+                if (pointers.j === index) {
+                    element.classList.add('highlight-j-pointer');
+                }
+
+                container.appendChild(element);
+            });
+        }
+
+        // --- Merge Sort Simulation ---
+        let mergeSortSteps = [];
+        let mergeSortCurrentStep = 0;
+        let mergeSortRunning = false;
+
+        function recordMergeSortStep(array, description, highlights = {}, subArrays = [], tempArray = []) {
+            mergeSortSteps.push({
+                array: [...array],
+                description: description,
+                highlights: highlights,
+                subArrays: subArrays.map(arr => [...arr]), // Deep copy sub-arrays
+                tempArray: [...tempArray]
+            });
+        }
+
+        function mergeSort(arr) {
+            recordMergeSortStep(arr, "Deret Awal: " + JSON.stringify(arr));
+            _mergeSortRecursive(arr, 0, arr.length - 1);
+        }
+
+        function _mergeSortRecursive(arr, l, r) {
+            if (l >= r) {
+                // Base case: single element or empty array
+                recordMergeSortStep(arr, `Elemen tunggal: [${arr[l]}]`, {}, [[arr[l]]]);
+                return [arr[l]]; // Return a new array for merging
+            }
+
+            const m = Math.floor(l + (r - l) / 2);
+
+            recordMergeSortStep(arr, `Pecah: [${arr.slice(l, m + 1)}] | [${arr.slice(m + 1, r + 1)}]`, {}, [arr.slice(l, m + 1), arr.slice(m + 1, r + 1)]);
+
+            const leftHalf = _mergeSortRecursive(arr, l, m);
+            const rightHalf = _mergeSortRecursive(arr, m + 1, r);
+
+            // Simulate merging back into the original array
+            const merged = merge(arr, l, m, r);
+            return merged;
+        }
+
+        function merge(arr, l, m, r) {
+            const n1 = m - l + 1;
+            const n2 = r - m;
+
+            let L = new Array(n1);
+            let R = new Array(n2);
+
+            for (let i = 0; i < n1; i++) L[i] = arr[l + i];
+            for (let j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
+
+            let i = 0;
+            let j = 0;
+            let k = l;
+            let tempMergedArray = [];
+
+            recordMergeSortStep(arr, `Mulai menggabungkan: [${L}] dan [${R}]`, {}, [L, R], tempMergedArray);
+
+            while (i < n1 && j < n2) {
+                let currentArrState = [...arr]; // Capture current state of the main array
+                let highlights = { compare: [l + i, m + 1 + j] }; // Highlight elements being compared
+                
+                if (L[i] <= R[j]) {
+                    currentArrState[k] = L[i];
+                    tempMergedArray.push(L[i]);
+                    recordMergeSortStep(currentArrState, `Bandingkan ${L[i]} dan ${R[j]}. Ambil ${L[i]}.`, highlights, [L, R], tempMergedArray);
+                    i++;
+                } else {
+                    currentArrState[k] = R[j];
+                    tempMergedArray.push(R[j]);
+                    recordMergeSortStep(currentArrState, `Bandingkan ${L[i]} dan ${R[j]}. Ambil ${R[j]}.`, highlights, [L, R], tempMergedArray);
+                    j++;
+                }
+                k++;
+            }
+
+            while (i < n1) {
+                let currentArrState = [...arr];
+                currentArrState[k] = L[i];
+                tempMergedArray.push(L[i]);
+                recordMergeSortStep(currentArrState, `Ambil sisa elemen dari array kiri: ${L[i]}.`, { mergedIndices: [k] }, [L, R], tempMergedArray);
+                i++;
+                k++;
+            }
+
+            while (j < n2) {
+                let currentArrState = [...arr];
+                currentArrState[k] = R[j];
+                tempMergedArray.push(R[j]);
+                recordMergeSortStep(currentArrState, `Ambil sisa elemen dari array kanan: ${R[j]}.`, { mergedIndices: [k] }, [L, R], tempMergedArray);
+                j++;
+                k++;
+            }
+
+            // Update the actual array for the next recursive call's view
+            for (let x = l; x <= r; x++) {
+                arr[x] = tempMergedArray[x - l];
+            }
+            recordMergeSortStep(arr, `Hasil gabungan: [${tempMergedArray}]`, { sortedIndices: Array.from({length: r - l + 1}, (_, idx) => l + idx) }, [L, R], tempMergedArray);
+            return arr; // Return the modified original array segment
+        }
+
+        function startMergeSort() {
+            if (mergeSortRunning) return;
+            mergeSortRunning = true;
+            mergeSortSteps = [];
+            mergeSortCurrentStep = 0;
+            const tempArray = [...initialArray]; // Use a copy for sorting
+            mergeSort(tempArray);
+            
+            document.getElementById('mergeSortStartBtn').disabled = true;
+            document.getElementById('mergeSortNextBtn').disabled = false;
+            document.getElementById('mergeSortResetBtn').disabled = false;
+            nextMergeSortStep(); // Display the first step
+        }
+
+        function nextMergeSortStep() {
+            if (mergeSortCurrentStep < mergeSortSteps.length) {
+                const step = mergeSortSteps[mergeSortCurrentStep];
+                displayArray('mergeSortArrayDisplay', step.array, step.highlights);
+                document.getElementById('mergeSortDescription').textContent = step.description;
+
+                const subArrayContainer = document.getElementById('mergeSortSubArrays');
+                subArrayContainer.innerHTML = '';
+                if (step.subArrays && step.subArrays.length > 0) {
+                    step.subArrays.forEach((subArr, idx) => {
+                        const subDiv = document.createElement('div');
+                        subDiv.classList.add('sub-array');
+                        subDiv.innerHTML = `<div class="sub-array-label">${idx === 0 ? 'Kiri' : 'Kanan'}</div>`;
+                        subArr.forEach(num => {
+                            const el = document.createElement('div');
+                            el.classList.add('array-element');
+                            el.textContent = num;
+                            subDiv.appendChild(el);
+                        });
+                        subArrayContainer.appendChild(subDiv);
+                    });
+                }
+
+                const tempArrayDisplay = document.getElementById('mergeSortTempArray');
+                if (step.tempArray && step.tempArray.length > 0) {
+                    tempArrayDisplay.style.display = 'flex';
+                    displayArray('mergeSortTempArray', step.tempArray, { mergedIndices: Array.from({length: step.tempArray.length}, (_, idx) => idx) });
+                } else {
+                    tempArrayDisplay.style.display = 'none';
+                }
+
+                mergeSortCurrentStep++;
+            } else {
+                document.getElementById('mergeSortNextBtn').disabled = true;
+                document.getElementById('mergeSortDescription').textContent = "Merge Sort Selesai! Array terurut: " + JSON.stringify(mergeSortSteps[mergeSortSteps.length - 1].array);
+                displayArray('mergeSortArrayDisplay', mergeSortSteps[mergeSortSteps.length - 1].array, { sortedIndices: Array.from({length: initialArray.length}, (_, idx) => idx) });
+            }
+        }
+
+        function resetMergeSort() {
+            mergeSortRunning = false;
+            mergeSortSteps = [];
+            mergeSortCurrentStep = 0;
+            displayArray('mergeSortArrayInitial', initialArray);
+            displayArray('mergeSortArrayDisplay', []);
+            document.getElementById('mergeSortSubArrays').innerHTML = '';
+            document.getElementById('mergeSortTempArray').innerHTML = '<div class="sub-array-label">Array Sementara (Hasil Merge)</div>';
+            document.getElementById('mergeSortTempArray').style.display = 'none';
+            document.getElementById('mergeSortDescription').textContent = "Klik 'Mulai' untuk melihat simulasi Merge Sort.";
+            
+            document.getElementById('mergeSortStartBtn').disabled = false;
+            document.getElementById('mergeSortNextBtn').disabled = true;
+            document.getElementById('mergeSortResetBtn').disabled = true;
+        }
+
+        // --- Quick Sort Simulation ---
+        let quickSortSteps = [];
+        let quickSortCurrentStep = 0;
+        let quickSortRunning = false;
+
+        function recordQuickSortStep(array, description, highlights = {}, pointers = {}) {
+            quickSortSteps.push({
+                array: [...array],
+                description: description,
+                highlights: highlights,
+                pointers: pointers
+            });
+        }
+
+        function quickSort(arr, low, high) {
+            if (low < high) {
+                let pi = partition(arr, low, high);
+                quickSort(arr, low, pi - 1);
+                quickSort(arr, pi + 1, high);
+            } else if (low === high) {
+                recordQuickSortStep(arr, `Sub-array [${arr[low]}] sudah terurut.`, { sortedIndices: [low] });
+            }
+        }
+
+        function partition(arr, low, high) {
+            let pivot = arr[high];
+            recordQuickSortStep(arr, `Pilih Pivot: ${pivot} (elemen terakhir dari sub-array [${arr.slice(low, high + 1)}])`, { pivotIndex: high });
+
+            let i = (low - 1); // Index of smaller element
+
+            for (let j = low; j < high; j++) {
+                recordQuickSortStep(arr, `Bandingkan ${arr[j]} dengan Pivot (${pivot}).`, { pivotIndex: high, currentIterationIndex: j, compare: [j, high] }, { i: i + 1, j: j });
+                // If current element is smaller than or equal to pivot
+                if (arr[j] <= pivot) {
+                    i++;
+                    let temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                    recordQuickSortStep(arr, `Elemen ${arr[j]} < ${pivot}. Tukar ${arr[i]} dan ${arr[j]}.`, { pivotIndex: high, swapIndices: [i, j], currentIterationIndex: j }, { i: i, j: j });
+                }
+            }
+
+            // Swap arr[i+1] and arr[high] (pivot)
+            let temp = arr[i + 1];
+            arr[i + 1] = arr[high];
+            arr[high] = temp;
+
+            recordQuickSortStep(arr, `Tukar Pivot (${pivot}) dengan ${temp}. Pivot sekarang berada di posisi akhir partisinya.`, { pivotIndex: i + 1, swapIndices: [i + 1, high], sortedIndices: [i + 1] });
+            return i + 1;
+        }
+
+        function startQuickSort() {
+            if (quickSortRunning) return;
+            quickSortRunning = true;
+            quickSortSteps = [];
+            quickSortCurrentStep = 0;
+            const tempArray = [...initialArray]; // Use a copy for sorting
+            recordQuickSortStep(tempArray, "Deret Awal: " + JSON.stringify(tempArray));
+            quickSort(tempArray, 0, tempArray.length - 1);
+            
+            document.getElementById('quickSortStartBtn').disabled = true;
+            document.getElementById('quickSortNextBtn').disabled = false;
+            document.getElementById('quickSortResetBtn').disabled = false;
+            nextQuickSortStep(); // Display the first step
+        }
+
+        function nextQuickSortStep() {
+            if (quickSortCurrentStep < quickSortSteps.length) {
+                const step = quickSortSteps[quickSortCurrentStep];
+                displayArray('quickSortArrayDisplay', step.array, step.highlights, step.pointers);
+                document.getElementById('quickSortDescription').textContent = step.description;
+                quickSortCurrentStep++;
+            } else {
+                document.getElementById('quickSortNextBtn').disabled = true;
+                document.getElementById('quickSortDescription').textContent = "Quick Sort Selesai! Array terurut: " + JSON.stringify(quickSortSteps[quickSortSteps.length - 1].array);
+                displayArray('quickSortArrayDisplay', quickSortSteps[quickSortSteps.length - 1].array, { sortedIndices: Array.from({length: initialArray.length}, (_, idx) => idx) });
+            }
+        }
+
+        function resetQuickSort() {
+            quickSortRunning = false;
+            quickSortSteps = [];
+            quickSortCurrentStep = 0;
+            displayArray('quickSortArrayInitial', initialArray);
+            displayArray('quickSortArrayDisplay', []);
+            document.getElementById('quickSortDescription').textContent = "Klik 'Mulai' untuk melihat simulasi Quick Sort.";
+            
+            document.getElementById('quickSortStartBtn').disabled = false;
+            document.getElementById('quickSortNextBtn').disabled = true;
+            document.getElementById('quickSortResetBtn').disabled = true;
+        }
+
+        // --- Event Listeners and Initial Display ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial display for both algorithms
+            displayArray('mergeSortArrayInitial', initialArray);
+            document.getElementById('mergeSortDescription').textContent = "Klik 'Mulai' untuk melihat simulasi Merge Sort.";
+
+            displayArray('quickSortArrayInitial', initialArray);
+            document.getElementById('quickSortDescription').textContent = "Klik 'Mulai' untuk melihat simulasi Quick Sort.";
+
+            // Merge Sort Buttons
+            document.getElementById('mergeSortStartBtn').addEventListener('click', startMergeSort);
+            document.getElementById('mergeSortNextBtn').addEventListener('click', nextMergeSortStep);
+            document.getElementById('mergeSortResetBtn').addEventListener('click', resetMergeSort);
+
+            // Quick Sort Buttons
+            document.getElementById('quickSortStartBtn').addEventListener('click', startQuickSort);
+            document.getElementById('quickSortNextBtn').addEventListener('click', nextQuickSortStep);
+            document.getElementById('quickSortResetBtn').addEventListener('click', resetQuickSort);
+        });
+    </script>
+</body>
+</html>
