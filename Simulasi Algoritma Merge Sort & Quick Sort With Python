@@ -1,0 +1,123 @@
+import matplotlib.pyplot as plt
+
+# --- Fungsi Visualisasi Umum ---
+def plot_array(arr, low=None, high=None, pivot_idx=None, l=None, m=None, r=None, suptitle="", title="", pause=0.8):
+    plt.clf()
+    colors = ['grey'] * len(arr)
+    # Untuk Quick Sort
+    if low is not None and high is not None:
+        for i in range(low, high+1):
+            colors[i] = 'blue'
+    if pivot_idx is not None:
+        colors[pivot_idx] = 'orange'
+    # Untuk Merge Sort
+    if l is not None and m is not None and r is not None:
+        for i in range(l, m+1):
+            colors[i] = 'blue'
+        for i in range(m+1, r+1):
+            colors[i] = 'orange'
+    bars = plt.bar(range(len(arr)), arr, color=colors)
+    for i, bar in enumerate(bars):
+        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1, str(arr[i]),
+                 ha='center', va='bottom', fontsize=10)
+    plt.suptitle(suptitle, fontsize=16, fontweight='bold', y=0.98)
+    plt.title(title)
+    plt.ylim(0, max(arr) + 15)
+    plt.xticks(range(len(arr)), range(len(arr)))
+    plt.pause(pause)
+
+# --- Merge Sort ---
+def merge_sort_visual(array, l, r, step_counter, arr_ref):
+    if l < r:
+        m = (l + r) // 2
+        step = step_counter[0]
+        plot_array(arr_ref, l=l, m=m, r=r, suptitle="Merge Sort",
+                   title=f"Step {step}: Divide [{l}:{m}] kiri, [{m+1}:{r}] kanan")
+        step_counter[0] += 1
+        merge_sort_visual(array, l, m, step_counter, arr_ref)
+        merge_sort_visual(array, m+1, r, step_counter, arr_ref)
+        merge(array, l, m, r)
+        step = step_counter[0]
+        plot_array(arr_ref, l=l, m=m, r=r, suptitle="Merge Sort",
+                   title=f"Step {step}: Merge [{l}:{m}] kiri, [{m+1}:{r}] kanan")
+        step_counter[0] += 1
+
+def merge(array, l, m, r):
+    left = array[l:m+1]
+    right = array[m+1:r+1]
+    i = j = 0
+    k = l
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            array[k] = left[i]
+            i += 1
+        else:
+            array[k] = right[j]
+            j += 1
+        k += 1
+    while i < len(left):
+        array[k] = left[i]
+        i += 1
+        k += 1
+    while j < len(right):
+        array[k] = right[j]
+        j += 1
+        k += 1
+
+# --- Quick Sort ---
+def quick_sort_visual(arr, low, high, step_counter, arr_ref):
+    if low < high:
+        pi = partition_visual(arr, low, high, step_counter, arr_ref)
+        quick_sort_visual(arr, low, pi - 1, step_counter, arr_ref)
+        quick_sort_visual(arr, pi + 1, high, step_counter, arr_ref)
+
+def partition_visual(arr, low, high, step_counter, arr_ref):
+    pivot = arr[high]
+    i = low - 1
+    step = step_counter[0]
+    plot_array(arr_ref, low=low, high=high, pivot_idx=high, suptitle="Quick Sort",
+               title=f"Step {step}: Partitioning with pivot {pivot}")
+    step_counter[0] += 1
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+            plot_array(arr_ref, low=low, high=high, pivot_idx=high, suptitle="Quick Sort",
+                       title=f"Step {step_counter[0]}: Swap {arr[i]} and {arr[j]}")
+            step_counter[0] += 1
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    plot_array(arr_ref, low=low, high=high, pivot_idx=i+1, suptitle="Quick Sort",
+               title=f"Step {step_counter[0]}: Move pivot {pivot} to index {i+1}")
+    step_counter[0] += 1
+    return i + 1
+
+# --- MAIN ---
+if __name__ == "__main__":
+    # Merge Sort
+    arr_merge = [80, 34, 72, 3, 9, 61, 33, 67, 74]
+    step_counter_merge = [1]
+    print("ALGORITMA MERGE SORT")
+    print("Array awal Merge Sort:", arr_merge)
+    plt.ion()
+    plot_array(arr_merge, suptitle="Merge Sort", title="Step 0: Initial Array")
+    merge_sort_visual(arr_merge, 0, len(arr_merge)-1, step_counter_merge, arr_merge)
+    plot_array(arr_merge, suptitle="Merge Sort", title=f"Step {step_counter_merge[0]}: Sorted Array")
+    plt.ioff()
+    plt.show()
+    print("Array setelah Merge Sort:", arr_merge)
+    print("Total langkah Merge Sort:", step_counter_merge[0])
+    print("="*50)
+
+    # Quick Sort
+    arr_quick = [80, 34, 72, 3, 9, 61, 33, 67, 74]
+    step_counter_quick = [1]
+    print("ALGORITMA QUICK SORT")
+    print("Array awal Quick Sort:", arr_quick)
+    plt.ion()
+    plot_array(arr_quick, suptitle="Quick Sort", title="Step 0: Initial Array")
+    quick_sort_visual(arr_quick, 0, len(arr_quick)-1, step_counter_quick, arr_quick)
+    plot_array(arr_quick, suptitle="Quick Sort", title=f"Step {step_counter_quick[0]}: Sorted Array")
+    plt.ioff()
+    plt.show()
+    print("Array setelah Quick Sort:", arr_quick)
+    print("Total langkah Quick Sort:", step_counter_quick[0])
