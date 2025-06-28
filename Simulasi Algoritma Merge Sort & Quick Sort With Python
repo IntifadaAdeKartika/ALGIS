@@ -1,5 +1,12 @@
 import matplotlib.pyplot as plt
 
+print("="*60)
+print("NAMA  : INTIFADA ADE KARTIKA")
+print("NIM   : 23533756")
+print("KELAS : 4C / TEKNIK INFORMATIKA")
+print("SIMULASI ALGORITMA MERGE SORT & QUICK SORT UNTUK PENGURUTAN DERET ANGKA")
+print("="*60)
+
 # --- Fungsi Visualisasi Umum ---
 def plot_array(arr, low=None, high=None, pivot_idx=None, l=None, m=None, r=None, suptitle="", title="", pause=0.8):
     plt.clf()
@@ -96,8 +103,8 @@ if __name__ == "__main__":
     # Merge Sort
     arr_merge = [80, 34, 72, 3, 9, 61, 33, 67, 74]
     step_counter_merge = [1]
-    print("ALGORITMA MERGE SORT")
-    print("Array awal Merge Sort:", arr_merge)
+    print("\nALGORITMA MERGE SORT")
+    print("Array awal:", arr_merge)
     plt.ion()
     plot_array(arr_merge, suptitle="Merge Sort", title="Step 0: Initial Array")
     merge_sort_visual(arr_merge, 0, len(arr_merge)-1, step_counter_merge, arr_merge)
@@ -111,8 +118,8 @@ if __name__ == "__main__":
     # Quick Sort
     arr_quick = [80, 34, 72, 3, 9, 61, 33, 67, 74]
     step_counter_quick = [1]
-    print("ALGORITMA QUICK SORT")
-    print("Array awal Quick Sort:", arr_quick)
+    print("\nALGORITMA QUICK SORT")
+    print("Array awal:", arr_quick)
     plt.ion()
     plot_array(arr_quick, suptitle="Quick Sort", title="Step 0: Initial Array")
     quick_sort_visual(arr_quick, 0, len(arr_quick)-1, step_counter_quick, arr_quick)
@@ -121,3 +128,4 @@ if __name__ == "__main__":
     plt.show()
     print("Array setelah Quick Sort:", arr_quick)
     print("Total langkah Quick Sort:", step_counter_quick[0])
+
